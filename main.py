@@ -34,8 +34,8 @@ login_box.click()
 # In[5]:
 
 
-account = 'tsubasa'
-password = 'hane0423'
+account = '<ACCOUNT>'
+password = '<PASSWORD>'
 
 
 # In[6]:
