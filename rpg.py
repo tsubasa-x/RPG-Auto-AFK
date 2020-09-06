@@ -227,135 +227,145 @@ def get_battle_count():
 
 
 while True:
-    print("Starting Driver")
-
-        #proxy = '211.21.92.211:4145'
-        #chrome_options = webdriver.ChromeOptions()
-        #chrome_options.add_argument('--proxy-server=http://' + proxy)
-        
-    #options = webdriver.ChromeOptions()
-    #prefs = {"profile.default_content_setting_values.notifications" : 2}
-    #options.add_experimental_option("prefs",prefs)
-    #options.add_argument("--disable-popup-blocking")
-    #options.add_argument("--disable-notifications")
-    
-    driver = webdriver.Chrome(r'./chromedriver.exe')
-    
-    driver.execute_script("window.onbeforeunload = function() {};")
-    
-    driver.get('https://badgameshow.com')
-
-
-    login_box = driver.find_element_by_xpath('//*[@id="left"]/ul[1]/li/input[2]')
-
-    login_box.click()
-
-    account = 'tsubasa'
-    password = 'hane0423'
-
-
-    acc_box = driver.find_element_by_xpath('//*[@id="right"]/div[2]/table/tbody/tr[1]/td/div/input')
-    pass_box = driver.find_element_by_xpath('//*[@id="right"]/div[2]/table/tbody/tr[2]/td/div/input')
-
-    acc_box.send_keys(account)
-    pass_box.send_keys(password)
-
-    submit_box = driver.find_element_by_xpath('//*[@id="right"]/div[2]/div/input[1]')
-    submit_box.click()
-
-    submit_confirm = driver.find_element_by_xpath('//*[@id="right"]/div[2]/div/input[4]')
-    submit_confirm.click()
-
-
-    time.sleep(3)
-    
     try:
-        alert = driver.switch_to.alert
-        alert.accept()
-        print("alert accepted")
-    except:
-        pass
-    
-    driver.execute_script("window.scrollTo(0, 550)")
+        print("Starting Driver")
 
-    battle_loc_id = 4
-    
-    
-    
-    origin_battles = driver.find_element_by_xpath('//*[@id="ext_today_total"]')
-    origin_battles = origin_battles.text[5:-1]
-    origin_battles = int(origin_battles)
-    
-    get_battle_count()
-    try:
-        print("count : %d"%battle_count)
-    except:
-        continue
+            #proxy = '211.21.92.211:4145'
+            #chrome_options = webdriver.ChromeOptions()
+            #chrome_options.add_argument('--proxy-server=http://' + proxy)
 
-    restart_cnt = 0    
-    
-    while True:
-        if restart_cnt > 5:
-            break
+        #options = webdriver.ChromeOptions()
+        #prefs = {"profile.default_content_setting_values.notifications" : 2}
+        #options.add_experimental_option("prefs",prefs)
+        #options.add_argument("--disable-popup-blocking")
+        #options.add_argument("--disable-notifications")
+
+        driver = webdriver.Chrome(r'./chromedriver.exe')
+
+        driver.execute_script("window.onbeforeunload = function() {};")
+
+        driver.get('https://badgameshow.com')
+
+
+        login_box = driver.find_element_by_xpath('//*[@id="left"]/ul[1]/li/input[2]')
+
+        login_box.click()
+
+        account = 'tsubasa'
+        password = 'hane0423'
+
+
+        acc_box = driver.find_element_by_xpath('//*[@id="right"]/div[2]/table/tbody/tr[1]/td/div/input')
+        pass_box = driver.find_element_by_xpath('//*[@id="right"]/div[2]/table/tbody/tr[2]/td/div/input')
+
+        acc_box.send_keys(account)
+        pass_box.send_keys(password)
+
+        submit_box = driver.find_element_by_xpath('//*[@id="right"]/div[2]/div/input[1]')
+        submit_box.click()
+
+        time.sleep(1)
+
+        submit_confirm = driver.find_element_by_xpath('//*[@id="right"]/div[2]/div/input[4]')
+        submit_confirm.click()
+
+
+        time.sleep(3)
+
         try:
-            try:
-                alert = driver.switch_to.alert
-                alert.accept()
-                print("alert accepted")
-                sleep(1)
-            except:
-                pass
-    
-            progress = driver.find_element_by_xpath('//*[@id="tok"]')
-            if progress.text[0] != '剩' and progress.text[0] != '行':
-                box = driver.find_element_by_xpath('//*[@id="autoattack"]')
-                if box.is_selected() is True:
-                    continue
-            
-            
-            current = driver.find_element_by_xpath('//*[@id="ext_today_total"]')
-            current = int(current.text[5:-1])
-            print("current : %d"%current)
-            if current < origin_battles:
-                origin_battles = current
-                print("date changed")
-            elif current >= origin_battles + battle_count:
-                break
-                quest()
-                origin_battles = current
-                print("Quest Done, battle count : %d"%battle_count)
-
-            time.sleep(1.5)
-            check_balance()
-            check_health()
-            auto_attack(battle_loc_id)
-
-            current_time = datetime.now().strftime("%H:%M:%S")
-            f.write("%s\tWorking\r\n"%current_time)
-            
-            restart_cnt = 0
-            # if quest_finished >= 5:
-            #     print("restarting driver")
-            #     break
+            alert = driver.switch_to.alert
+            alert.accept()
+            print("alert accepted")
         except:
-            current_time = datetime.now().strftime("%H:%M:%S")
-            f.write("%s\tRestarting\r\n"%current_time)
-            #driver.switch_to.parent_frame()
-            driver.back()
+            pass
+
+        driver.execute_script("window.scrollTo(0, 550)")
+
+        battle_loc_id = 4
+
+
+
+        origin_battles = driver.find_element_by_xpath('//*[@id="ext_today_total"]')
+        origin_battles = origin_battles.text[5:-1]
+        origin_battles = int(origin_battles)
+
+        get_battle_count()
+        try:
+            print("count : %d"%battle_count)
+        except:
+            continue
+
+        restart_cnt = 0    
+        battle_cnt = 0
+        same_cnt = 0
+        while True:
+            if restart_cnt > 5:
+                break
+            if same_cnt > 5:
+                driver.refresh()
+                same_cnt = 0
             try:
-                driver.switch_to.frame(frame_reference=driver.find_element_by_xpath("//iframe[@name='actionframe']"))
-                back_town = driver.find_element_by_xpath('/html/body/table/tbody/tr[3]/td/input')
-                back_town.click()
-                driver.switch_to.parent_frame()
-                time.sleep(1)
+                try:
+                    alert = driver.switch_to.alert
+                    alert.accept()
+                    print("alert accepted")
+                    sleep(1)
+                except:
+                    pass
+
+                progress = driver.find_element_by_xpath('//*[@id="tok"]')
+                if progress.text[0] != '剩' and progress.text[0] != '行':
+                    box = driver.find_element_by_xpath('//*[@id="autoattack"]')
+                    if box.is_selected() is True:
+                        continue
+
+
+                current = driver.find_element_by_xpath('//*[@id="ext_today_total"]')
+                current = int(current.text[5:-1])
+                print("current : %d"%current)
+                if battle_cnt == current:
+                    same_cnt += 1
+                else:
+                    battle_cnt = current
+                if current < origin_battles:
+                    origin_battles = current
+                    print("date changed")
+                elif current >= origin_battles + battle_count:
+                    break
+                    quest()
+                    origin_battles = current
+                    print("Quest Done, battle count : %d"%battle_count)
+
+                time.sleep(1.5)
+                check_balance()
+                check_health()
+                auto_attack(battle_loc_id)
+
+                current_time = datetime.now().strftime("%H:%M:%S")
+                f.write("%s\tWorking\r\n"%current_time)
+
+                restart_cnt = 0
+                # if quest_finished >= 5:
+                #     print("restarting driver")
+                #     break
             except:
-                driver.forward()
-            restart_cnt += 1
-            time.sleep(2)
+                current_time = datetime.now().strftime("%H:%M:%S")
+                f.write("%s\tRestarting\r\n"%current_time)
+                #driver.switch_to.parent_frame()
+                try:
+                    driver.switch_to.frame(frame_reference=drxxxiver.find_element_by_xpath("//iframe[@name='actionframe']"))
+                    back_town = driver.find_element_by_xpath('/html/body/table/tbody/tr[3]/td/input')
+                    back_town.click()
+                    driver.switch_to.parent_frame()
+                    time.sleep(1)
+                except:
+                    driver.refresh()
+                restart_cnt += 1
+                time.sleep(2)
 
-    driver.quit()
-    time.sleep(1)
-
+        driver.quit()
+    except:
+        driver.quit()
 f.close()
 
 
